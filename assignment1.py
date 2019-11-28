@@ -1,8 +1,8 @@
 import numpy as np
 
-a = 1 # alpha
-N = 20 # Amount of features
-P = a*N # Amount of samples
+a = 1.0      # alpha
+N = 20       # Amount of features
+P = int(a*N) # Amount of samples
 
 xi = []
 S = []
@@ -12,30 +12,31 @@ for i in range(P):
     s = np.random.normal(mu, sigma, N)
     xi.append(s)
 
-    label = np.random.randint(2)
+    # label = np.random.randint(2)
+    label = 1 if np.random.rand() < 0.5 else -1
     S.append(label)
 
 w = np.zeros(N)
 
 n_max = 100
 for epoch in range(n_max):
-    S_pred = np.zeros(P, dtype=int)
+    # S_pred = np.zeros(P, dtype=int)
+    scores = np.zeros(P, dtype=int)
 
     for mu_t in range(P):
         e_mu_t = np.dot(xi[mu_t], w) * S[mu_t]
 
         # predict
-        S_pred[mu_t] = 1 if e_mu_t > 0 else 0
+        scores[mu_t] = 1 if e_mu_t > 0 else 0
 
         # update weight matrix
         if e_mu_t <= 0:
             w = w + a * xi[mu_t] * S[mu_t]
     
     # compare
-    correctness = np.equal(S_pred, S)
-    score = np.sum(correctness)
-    success = np.all(correctness)
-    
+    score = np.sum(scores)
+    success = score == P
+
     print('Epoch {} score [{}/{}]'.format(epoch, score, P))
     if success:
         break
