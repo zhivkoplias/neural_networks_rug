@@ -1,3 +1,5 @@
+import numpy as np
+
 #function
 def perceptron(a, N, n_max):
     """a - alpha
@@ -5,21 +7,22 @@ def perceptron(a, N, n_max):
     P - amount of samples
     n_max = max number of epochs"""
     P = int(a*N) # Amount of samples
+    xi = []
+    S = []
 
-    for i in range(P):
+    for _ in range(P):
         # Draw N random samples from Gaussian distribution.
         mu, sigma = 0, 0.1
         s = np.random.normal(mu, sigma, N)
         xi.append(s)
 
-    # label = np.random.randint(2)
-    label = 1 if np.random.rand() < 0.5 else -1
-    S.append(label)
+        # label = np.random.randint(2)
+        label = 1 if np.random.rand() < 0.5 else -1
+        S.append(label)
 
     w = np.zeros(N)
 
-    for epoch in range(n_max):
-        # S_pred = np.zeros(P, dtype=int)
+    for _ in range(n_max):
         scores = np.zeros(P, dtype=int)
 
         for mu_t in range(P):
@@ -36,19 +39,27 @@ def perceptron(a, N, n_max):
         score = np.sum(scores)
         success = score == P
 
-   #     print('Epoch {} score [{}/{}]'.format(epoch, score, P))
+        # print('Epoch {} score [{}/{}]'.format(epoch, score, P))
         if success:
             return 1
-        if epoch >= n_max-1:
-            return 0
+
+    return 0
 
 #plot
 alphas = np.linspace(0.75, 3, 10)
 convergence = np.empty([0, 1])
+max_epochs = 100
 
-for i in alphas:
+for alpha in alphas:
+    print('alpha = {}'.format(alpha))
+    results = []
+
     for j in range(10):
-        print(i)
-        convergence = np.append(convergence,(perceptron(i, 20, 100)))
+        result = perceptron(alpha, 20, max_epochs)
+        results.append(result)
+        convergence = np.append(convergence, (result))
 
-    print(convergence)
+    hits = np.sum(results)
+    total = np.size(results)
+    print('\t{}/{} randomly generated datasets ended early in {} epochs'.format(
+        hits, total, max_epochs))
