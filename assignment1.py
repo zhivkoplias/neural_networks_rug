@@ -1,4 +1,9 @@
 import numpy as np
+import datetime
+
+t_start = datetime.datetime.now()
+t_generate = t_start      # time spent generating sample data
+t_perceptron = t_start    # time spent executing the perceptron
 
 #function
 def perceptron(a, N, n_max):
@@ -9,6 +14,10 @@ def perceptron(a, N, n_max):
     P = int(a*N) # Amount of samples
     xi = []
     S = []
+    
+    global t_generate
+    global t_perceptron
+    timing_1 = datetime.datetime.now()
 
     for _ in range(P):
         # Draw N random samples from Gaussian distribution.
@@ -20,8 +29,10 @@ def perceptron(a, N, n_max):
         label = 1 if np.random.rand() < 0.5 else -1
         S.append(label)
 
-    w = np.zeros(N)
+    timing_2 = datetime.datetime.now()
+    t_generate += timing_2 - timing_1
 
+    w = np.zeros(N) # weights
     for _ in range(n_max):
         scores = np.zeros(P, dtype=int)
 
@@ -41,15 +52,17 @@ def perceptron(a, N, n_max):
 
         # print('Epoch {} score [{}/{}]'.format(epoch, score, P))
         if success:
+            t_perceptron += datetime.datetime.now() - timing_2
             return 1
 
+    t_perceptron += datetime.datetime.now() - timing_2
     return 0
 
 #plot
 alphas = np.linspace(0.75, 3, 10)
 convergence = np.empty([0, 1])
 max_epochs = 100
-number_sets = 500
+number_sets = 50
 
 for alpha in alphas:
     print('alpha = {}'.format(alpha))
@@ -64,3 +77,7 @@ for alpha in alphas:
     total = np.size(results)
     print('\t{}/{} randomly generated datasets ended early in {} epochs'.format(
         hits, total, max_epochs))
+
+print('\nTotal execution times')
+print('\tTime generating datasets = {}'.format(t_generate - t_start))
+print('\tTime executing perceptron = {}'.format(t_perceptron - t_start))
