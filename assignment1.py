@@ -49,12 +49,13 @@ def perceptron(a, N, n_max):
 alphas = np.linspace(0.75, 3, 10)
 convergence = np.empty([0, 1])
 max_epochs = 100
+number_sets = 500
 
 for alpha in alphas:
     print('alpha = {}'.format(alpha))
     results = []
 
-    for j in range(10):
+    for j in range(number_sets):
         result = perceptron(alpha, 20, max_epochs)
         results.append(result)
         convergence = np.append(convergence, (result))
