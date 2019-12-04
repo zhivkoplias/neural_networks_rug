@@ -1,5 +1,7 @@
 import numpy as np
 import datetime
+from multiprocessing import Pool
+from itertools import product
 
 t_start = datetime.datetime.now()
 t_generate = t_start      # time spent generating sample data
@@ -9,11 +11,12 @@ t_perceptron = t_start    # time spent executing the perceptron
 def perceptron(a, N, n_max):
     """a - alpha
     N - amount of features
-    P - amount of samples
     n_max = max number of epochs"""
     P = int(a*N) # Amount of samples
     xi = []
     S = []
+
+    print('perceptron(a={}, N={}, n_max={})'.format(a, N, n_max))
     
     global t_generate
     global t_perceptron
@@ -44,7 +47,7 @@ def perceptron(a, N, n_max):
 
             # update weight matrix
             if e_mu_t <= 0:
-                w = w + a * xi[mu_t] * S[mu_t]
+                w += a * xi[mu_t] * S[mu_t]
     
         # compare
         score = np.sum(scores)
@@ -58,30 +61,39 @@ def perceptron(a, N, n_max):
     t_perceptron += datetime.datetime.now() - timing_2
     return 0
 
-#plot
+# Execution parameters
 alphas = np.linspace(0.75, 3, 10)
 convergence = np.empty([0, 1])
 max_epochs = 100
 number_sets = 50
+N = 100
 
-for alpha in alphas:
-    print('alpha = {}'.format(alpha))
-    results = []
-    t_alpha_start = datetime.datetime.now()
+# Create multiprocessing pool
+with Pool(processes=4) as pool: # by default, uses n = os.cpu_count()
+    results = pool.starmap(perceptron, 
+            product(alphas, np.full(number_sets, N), [ max_epochs ])
+    )
+    print(results)
 
-    for j in range(number_sets):
-        result = perceptron(alpha, 20, max_epochs)
-        results.append(result)
-        convergence = np.append(convergence, (result))
 
-    # timing
-    t_end = datetime.datetime.now()
-    print('\tExecution time = {}'.format(t_end - t_alpha_start))
-    # results
-    hits = np.sum(results)
-    total = np.size(results)
-    print('\t{}/{} randomly generated datasets ended early in {} epochs'.format(
-        hits, total, max_epochs))
+# for alpha in alphas:
+#     print('alpha = {}'.format(alpha))
+#     results = []
+#     t_alpha_start = datetime.datetime.now()
+
+#     for _ in range(number_sets):
+#         result = perceptron(alpha, 20, max_epochs)
+#         results.append(result)
+#         convergence = np.append(convergence, (result))
+
+#     # timing
+#     t_end = datetime.datetime.now()
+#     print('\tExecution time = {}'.format(t_end - t_alpha_start))
+#     # results
+#     hits = np.sum(results)
+#     total = np.size(results)
+#     print('\t{}/{} randomly generated datasets ended early in {} epochs'.format(
+        # hits, total, max_epochs))
 
 print('\nTotal execution times')
 print('\tTime generating datasets = {}'.format(t_generate - t_start))
