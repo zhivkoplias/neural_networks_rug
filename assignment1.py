@@ -47,7 +47,8 @@ alphas = np.linspace(0.75, 3, 10)
 convergence = np.empty([0, 1])
 
 for i in alphas:
-    print(i)
-    convergence = np.append(convergence,(perceptron(i, 20, 100)))
+    for j in range(10):
+        print(i)
+        convergence = np.append(convergence,(perceptron(i, 20, 100)))
 
-print(convergence)
+    print(convergence)
