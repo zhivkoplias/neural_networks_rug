@@ -39,13 +39,14 @@ def perceptron(a, N, n_max):
    #     print(epoch)
         if success:
             return 1
-        if epoch > n_max:
+        if epoch > n_max and success != True:
             return 0
-
 
 alphas = np.linspace(0.75, 3, 10)
 convergence = np.empty([0, 1])
 
 for i in alphas:
     print(i)
-    print(perceptron(i, 20, 100))
+    convergence = np.append(convergence,(perceptron(i, 20, 100)))
+
+print(convergence)
