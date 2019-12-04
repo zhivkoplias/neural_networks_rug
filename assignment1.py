@@ -67,12 +67,17 @@ number_sets = 50
 for alpha in alphas:
     print('alpha = {}'.format(alpha))
     results = []
+    t_alpha_start = datetime.datetime.now()
 
     for j in range(number_sets):
         result = perceptron(alpha, 20, max_epochs)
         results.append(result)
         convergence = np.append(convergence, (result))
 
+    # timing
+    t_end = datetime.datetime.now()
+    print('\tExecution time = {}'.format(t_end - t_alpha_start))
+    # results
     hits = np.sum(results)
     total = np.size(results)
     print('\t{}/{} randomly generated datasets ended early in {} epochs'.format(
