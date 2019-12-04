@@ -1,3 +1,4 @@
+#function
 def perceptron(a, N, n_max):
     """a - alpha
     N - amount of features
@@ -36,12 +37,12 @@ def perceptron(a, N, n_max):
         success = score == P
 
    #     print('Epoch {} score [{}/{}]'.format(epoch, score, P))
-   #     print(epoch)
         if success:
             return 1
-        if epoch > n_max and success != True:
+        if epoch >= n_max-1:
             return 0
 
+#plot
 alphas = np.linspace(0.75, 3, 10)
 convergence = np.empty([0, 1])
 
