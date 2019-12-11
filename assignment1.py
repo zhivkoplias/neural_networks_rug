@@ -2,6 +2,7 @@ import numpy as np
 from datetime import datetime
 from multiprocessing import Pool
 from itertools import product
+import pickle
 
 # Perceptron function
 def perceptron(a, N, n_max):
@@ -56,7 +57,7 @@ alphas = np.linspace(0.75, 3, 10)
 convergence = np.empty([0, 1])
 max_epochs = 100
 number_sets = 50
-N = 10
+N = 10 # features
 
 ### Create multiprocessing pool
 t_start1 = datetime.now()
@@ -82,7 +83,10 @@ for i, res in enumerate(resultsMat):
 
 t_end1 = datetime.now()
 
-
+# Dump results to file
+fileObject = open('./results.pickle','wb')
+pickle.dump(resultsMat, fileObject)
+fileObject.close()
 
 ### Using for loops.
 # t_start2 = datetime.now()

@@ -1,4 +1,5 @@
-# neural_networks_rug
+# Perceptron training assignment
+Neural Networks course RUG
 
 ### Using virtual env (instead of anaconda)
 To install dependencies:
