@@ -58,23 +58,21 @@ alphas = np.linspace(0.75, 3, 10)
 nmax = 100      # max number of epochs - before stopping without convergence
 N = 10          # amount of features - to use for the dataset
 nd = 50         # number of datasets - to generate for each alpha
-# Program execution parameters
-# whether to enable multi-core processing
+
+# Decide between singlecore and multicore execution
 multicore = np.size(sys.argv) > 1 and sys.argv[1] == '--multicore'
+provider = Pool() if multicore else itertools # Pool() utilises all cores
 
-### Create multiprocessing pool
+# Run perceptron
 t_start1 = datetime.now()
-pool = Pool() # by default, uses n = os.cpu_count()
-provider = pool if multicore else itertools
+resultsList = list(provider.starmap(perceptron, 
+        itertools.product(alphas, np.full(nd, N), [ nmax ])))
+t_end1 = datetime.now()
 
-results = provider.starmap(perceptron, 
-        itertools.product(alphas, np.full(nd, N), [ nmax ]))
-
-results = list(results)
-resultsMat = np.reshape(results, (np.size(alphas), nd))
-
+# Print results
+resultsMatrix = np.reshape(resultsList, (np.size(alphas), nd))
 print('Results:')
-for i, res in enumerate(resultsMat):
+for i, res in enumerate(resultsMatrix):
     a = alphas[i]
     hits = np.sum(res)
     total = np.size(res)
@@ -82,40 +80,12 @@ for i, res in enumerate(resultsMat):
     print('\ta = {}:\t[{}/{}] convergences in {} epochs'.format(
         a, hits, total, nmax))
 
-t_end1 = datetime.now()
-
 # Dump results to file
 fileObject = open('./nmax={},N={},nd={},a={}.pickle'
     .format(nmax, N, nd, a),'wb')
-pickle.dump(resultsMat, fileObject)
+pickle.dump(resultsMatrix, fileObject)
 fileObject.close()
-
-### Using for loops.
-convergence = np.empty([0, 1])
-t_start2 = datetime.now()
-for alpha in alphas:
-    print('alpha = {}'.format(alpha))
-    results = []
-    t_alpha_start = datetime.now()
-
-    for _ in range(nd):
-        result = perceptron(alpha, N, nmax)
-        results.append(result)
-        convergence = np.append(convergence, (result))
-
-    # timing
-    t_end = datetime.now()
-    print('\tExecution time = {}'.format(t_end - t_alpha_start))
-    # results
-    hits = np.sum(results)
-    total = np.size(results)
-    print('\t{}/{} randomly generated datasets ended early in {} epochs'.format(
-        hits, total, nmax))
-t_end2 = datetime.now()
-
-
 
 # Runtime report
 print('\nTotal execution time')
-print('\tUsing multiprocessing = {}'.format(t_end1 - t_start1))
-print('\tUsing for loops = {}'.format(t_end2 - t_start2))
+print('\tt = {}'.format(t_end1 - t_start1))
