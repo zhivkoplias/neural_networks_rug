@@ -7,4 +7,4 @@ N = 10          # amount of features - to use for the dataset
 nd = 50         # number of datasets - to generate for each alpha
 
 # Files
-resultsfn = './nmax={},N={},nd={}.pickle'.format(nmax, N, nd) # results filename
+resfn = './nmax={},N={},nd={}.pickle'.format(nmax, N, nd) # results filename

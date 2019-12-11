@@ -2,9 +2,9 @@ import numpy as np
 from datetime import datetime
 from multiprocessing import Pool
 import itertools
-import pickle
+from joblib import dump, load
 import sys
-from parameters import alphas, nmax, N, nd, resultsfn
+from parameters import alphas, nmax, N, nd, resfn
 
 # Perceptron function
 def perceptron(a, N, n_max):
@@ -77,9 +77,7 @@ for i, res in enumerate(resmat):
         .format(alphas[i], np.sum(res), np.size(res), nmax))
 
 # Dump results to file
-resfile = open(resultsfn,'wb')
-pickle.dump(resmat, resfile)
-resfile.close()
+dump(resmat, resfn)
 
 # Runtime report
 print('\nTotal execution time')
