@@ -25,11 +25,10 @@ def perceptron(a, N, n_max):
         s = np.random.normal(mu, sigma, N)
         xi.append(s)
 
-        # label = np.random.randint(2)
         label = 1 if np.random.rand() < 0.5 else -1
         S.append(label)
 
-    w = np.zeros(N) # weights
+    w = np.zeros(N) # weights. intiially set to 0
     for _ in range(n_max):
         scores = np.zeros(P, dtype=int)
 
@@ -73,16 +72,12 @@ t_end1 = datetime.now()
 resultsMatrix = np.reshape(resultsList, (np.size(alphas), nd))
 print('Results:')
 for i, res in enumerate(resultsMatrix):
-    a = alphas[i]
-    hits = np.sum(res)
-    total = np.size(res)
-
-    print('\ta = {}:\t[{}/{}] convergences in {} epochs'.format(
-        a, hits, total, nmax))
+    print('\t[alpha = {:.2f}] {:02d}/{:02d} datasets converged in {} epochs'
+        .format(alphas[i], np.sum(res), np.size(res), nmax))
 
 # Dump results to file
-fileObject = open('./nmax={},N={},nd={},a={}.pickle'
-    .format(nmax, N, nd, a),'wb')
+fileObject = open('./nmax={},N={},nd={}.pickle'
+    .format(nmax, N, nd),'wb')
 pickle.dump(resultsMatrix, fileObject)
 fileObject.close()
 
