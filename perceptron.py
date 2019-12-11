@@ -4,6 +4,7 @@ from multiprocessing import Pool
 import itertools
 import pickle
 import sys
+from parameters import alphas, nmax, N, nd, resultsfn
 
 # Perceptron function
 def perceptron(a, N, n_max):
@@ -53,10 +54,10 @@ def perceptron(a, N, n_max):
     return 0
 
 # Perceptron parameters
-alphas = np.linspace(0.75, 3, 10)
-nmax = 100      # max number of epochs - before stopping without convergence
-N = 10          # amount of features - to use for the dataset
-nd = 50         # number of datasets - to generate for each alpha
+# alphas = np.linspace(0.75, 3, 10)
+# nmax = 100      # max number of epochs - before stopping without convergence
+# N = 10          # amount of features - to use for the dataset
+# nd = 50         # number of datasets - to generate for each alpha
 
 # Decide between singlecore and multicore execution
 multicore = np.size(sys.argv) > 1 and sys.argv[1] == '--multicore'
@@ -64,22 +65,21 @@ provider = Pool() if multicore else itertools # Pool() utilises all cores
 
 # Run perceptron
 t_start1 = datetime.now()
-resultsList = list(provider.starmap(perceptron, 
-        itertools.product(alphas, np.full(nd, N), [ nmax ])))
+resvec = list(provider.starmap(perceptron, 
+        itertools.product(alphas, np.full(nd, N), [ nmax ]))) # Result vector
 t_end1 = datetime.now()
 
 # Print results
-resultsMatrix = np.reshape(resultsList, (np.size(alphas), nd))
+resmat = np.reshape(resvec, (np.size(alphas), nd)) # Result matrix
 print('Results:')
-for i, res in enumerate(resultsMatrix):
+for i, res in enumerate(resmat):
     print('\t[alpha = {:.2f}] {:02d}/{:02d} datasets converged in {} epochs'
         .format(alphas[i], np.sum(res), np.size(res), nmax))
 
 # Dump results to file
-fileObject = open('./nmax={},N={},nd={}.pickle'
-    .format(nmax, N, nd),'wb')
-pickle.dump(resultsMatrix, fileObject)
-fileObject.close()
+resfile = open(resultsfn,'wb')
+pickle.dump(resmat, resfile)
+resfile.close()
 
 # Runtime report
 print('\nTotal execution time')
