@@ -53,12 +53,6 @@ def perceptron(a, N, n_max):
 
     return 0
 
-# Perceptron parameters
-# alphas = np.linspace(0.75, 3, 10)
-# nmax = 100      # max number of epochs - before stopping without convergence
-# N = 10          # amount of features - to use for the dataset
-# nd = 50         # number of datasets - to generate for each alpha
-
 # Decide between singlecore and multicore execution
 multicore = np.size(sys.argv) > 1 and sys.argv[1] == '--multicore'
 provider = Pool() if multicore else itertools # Pool() utilises all cores
@@ -71,10 +65,10 @@ t_end1 = datetime.now()
 
 # Print results
 resmat = np.reshape(resvec, (np.size(alphas), nd)) # Result matrix
-print('Results:')
-for i, res in enumerate(resmat):
-    print('\t[alpha = {:.2f}] {:02d}/{:02d} datasets converged in {} epochs'
-        .format(alphas[i], np.sum(res), np.size(res), nmax))
+# print('Results:')
+# for i, res in enumerate(resmat):
+#     print('\t[alpha = {:.2f}] {:02d}/{:02d} datasets converged in {} epochs'
+#         .format(alphas[i], np.sum(res), np.size(res), nmax))
 
 # Dump results to file
 dump(resmat, resfn)
