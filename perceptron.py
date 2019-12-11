@@ -1,8 +1,9 @@
 import numpy as np
 from datetime import datetime
 from multiprocessing import Pool
-from itertools import product
+import itertools
 import pickle
+import sys
 
 # Perceptron function
 def perceptron(a, N, n_max):
@@ -52,25 +53,25 @@ def perceptron(a, N, n_max):
 
     return 0
 
-# Execution parameters
+# Perceptron parameters
 alphas = np.linspace(0.75, 3, 10)
-convergence = np.empty([0, 1])
-max_epochs = 100
-number_sets = 50
-N = 10 # features
+nmax = 100      # max number of epochs - before stopping without convergence
+N = 10          # amount of features - to use for the dataset
+nd = 50         # number of datasets - to generate for each alpha
+# Program execution parameters
+# whether to enable multi-core processing
+multicore = np.size(sys.argv) > 1 and sys.argv[1] == '--multicore'
 
 ### Create multiprocessing pool
 t_start1 = datetime.now()
 pool = Pool() # by default, uses n = os.cpu_count()
+provider = pool if multicore else itertools
 
-# mock results- to enable for debugging in vscode. see below.
-# results = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+results = provider.starmap(perceptron, 
+        itertools.product(alphas, np.full(nd, N), [ nmax ]))
 
-# (!) multiprocessing module does not work in VSCode debugging
-results = pool.starmap(perceptron, 
-        product(alphas, np.full(number_sets, N), [ max_epochs ]))
-
-resultsMat = np.reshape(results, (np.size(alphas), number_sets))
+results = list(results)
+resultsMat = np.reshape(results, (np.size(alphas), nd))
 
 print('Results:')
 for i, res in enumerate(resultsMat):
@@ -79,40 +80,42 @@ for i, res in enumerate(resultsMat):
     total = np.size(res)
 
     print('\ta = {}:\t[{}/{}] convergences in {} epochs'.format(
-        a, hits, total, max_epochs))
+        a, hits, total, nmax))
 
 t_end1 = datetime.now()
 
 # Dump results to file
-fileObject = open('./results.pickle','wb')
+fileObject = open('./nmax={},N={},nd={},a={}.pickle'
+    .format(nmax, N, nd, a),'wb')
 pickle.dump(resultsMat, fileObject)
 fileObject.close()
 
 ### Using for loops.
-# t_start2 = datetime.now()
-# for alpha in alphas:
-#     print('alpha = {}'.format(alpha))
-#     results = []
-#     t_alpha_start = datetime.now()
+convergence = np.empty([0, 1])
+t_start2 = datetime.now()
+for alpha in alphas:
+    print('alpha = {}'.format(alpha))
+    results = []
+    t_alpha_start = datetime.now()
 
-#     for _ in range(number_sets):
-#         result = perceptron(alpha, N, max_epochs)
-#         results.append(result)
-#         convergence = np.append(convergence, (result))
+    for _ in range(nd):
+        result = perceptron(alpha, N, nmax)
+        results.append(result)
+        convergence = np.append(convergence, (result))
 
-#     # timing
-#     t_end = datetime.now()
-#     print('\tExecution time = {}'.format(t_end - t_alpha_start))
-#     # results
-#     hits = np.sum(results)
-#     total = np.size(results)
-#     print('\t{}/{} randomly generated datasets ended early in {} epochs'.format(
-#         hits, total, max_epochs))
-# t_end2 = datetime.now()
+    # timing
+    t_end = datetime.now()
+    print('\tExecution time = {}'.format(t_end - t_alpha_start))
+    # results
+    hits = np.sum(results)
+    total = np.size(results)
+    print('\t{}/{} randomly generated datasets ended early in {} epochs'.format(
+        hits, total, nmax))
+t_end2 = datetime.now()
 
 
 
 # Runtime report
 print('\nTotal execution time')
 print('\tUsing multiprocessing = {}'.format(t_end1 - t_start1))
-# print('\tUsing for loops = {}'.format(t_end2 - t_start2))
+print('\tUsing for loops = {}'.format(t_end2 - t_start2))
