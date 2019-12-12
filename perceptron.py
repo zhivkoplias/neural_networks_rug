@@ -12,9 +12,6 @@ def perceptron(a, N, n_max):
     N - amount of features
     n_max = max number of epochs"""
 
-    # debugging
-    # print('perceptron(a={}, N={}, n_max={})'.format(a, N, n_max))
-
     P = int(a * N) # Amount of samples
     xi = []
     S = []
@@ -60,17 +57,12 @@ provider = Pool() if multicore else itertools # Pool() utilises all cores
 # Run perceptron
 t_start1 = datetime.now()
 resvec = list(provider.starmap(perceptron, 
-        itertools.product(alphas, np.full(nd, N), [ nmax ]))) # Result vector
+            itertools.product(alphas, np.full(nd, N), [ nmax ]))
+        ) # Result vector
 t_end1 = datetime.now()
 
-# Print results
-resmat = np.reshape(resvec, (np.size(alphas), nd)) # Result matrix
-# print('Results:')
-# for i, res in enumerate(resmat):
-#     print('\t[alpha = {:.2f}] {:02d}/{:02d} datasets converged in {} epochs'
-#         .format(alphas[i], np.sum(res), np.size(res), nmax))
-
 # Dump results to file
+resmat = np.reshape(resvec, (np.size(alphas), nd)) # Result matrix
 dump(resmat, resfn)
 
 # Runtime report
