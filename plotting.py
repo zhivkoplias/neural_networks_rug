@@ -1,11 +1,16 @@
-from parameters import alphas, nmax, resfn
+from parameters import alphas, nmax, resfn, nd
 from joblib import load
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 # Read results file
 resmat = load(resfn)
 
-# Create a plot displaying the results.
-for i, res in enumerate(resmat):
-    print('\t[alpha = {:.2f}] {:02d}/{:02d} datasets converged in {} epochs'
-        .format(alphas[i], np.sum(res), np.size(res), nmax))
+yvals = np.sum(resmat, axis=1) / nd
+data = pd.DataFrame({'x': alphas, 'y': yvals})
+sns.lineplot(data=data)
+plt.xlabel('alphas')
+plt.ylabel('fraction of convergences')
+plt.show()
