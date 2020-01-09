@@ -38,7 +38,7 @@ def perceptron(a, N, n_max):
 
             # update weight matrix
             if e_mu_t <= 0:
-                w += a * xi[mu_t] * S[mu_t]
+                w += (1 / N) * xi[mu_t] * S[mu_t]
     
         # compare
         score = np.sum(scores)
