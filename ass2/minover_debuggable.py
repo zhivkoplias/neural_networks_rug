@@ -9,13 +9,11 @@ from matplotlib import pyplot as plt
 nd = 10             # num of trials
 nmax = 100          # num of epochs
 N = 20              # num of features
-a_incr = 100         # num of alpha increments
-a_start = 0.1       # alpha starting number
-a_end = 10          # alpha ending number
-
-# constants
-alphas = np.linspace(a_start, a_end, a_incr)
-noise_levels = np.linspace(0, 1, 10)
+### alpha
+a_incr = 2         # num of alpha increments
+alphas = np.linspace(0.1, 10.1, a_incr) # alpha range.
+### noise
+noise_levels = np.linspace(0, 1, 2)
 
 # Minover algorithm
 def minover(P, N, nmax, noise):
@@ -116,6 +114,6 @@ for noise in noise_levels:
 
 plt.ylabel('Generalization error')
 plt.xlabel('alpha')
-plt.title('Generalization error Minover perceptron')
+plt.title('Minover perceptron error vs alpha [nmax={}, nd={}]'.format(nmax, nd))
 plt.legend()
 plt.show()
