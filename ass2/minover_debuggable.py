@@ -10,10 +10,10 @@ nd = 10             # num of trials
 nmax = 100          # num of epochs
 N = 20              # num of features
 ### alpha
-a_incr = 2         # num of alpha increments
-alphas = np.linspace(0.1, 10.1, a_incr) # alpha range.
+a_incr = 50         # num of alpha increments
+alphas = np.linspace(0.1, 10, a_incr) # alpha range.
 ### noise
-noise_levels = np.linspace(0, 1, 2)
+noise_levels = np.linspace(0, 0.5, 6)
 
 # Minover algorithm
 def minover(P, N, nmax, noise):
@@ -110,7 +110,8 @@ def run_experiment(noise):
 for noise in noise_levels:
     print('noise = {:.2f}'.format(noise))
     av_errors = run_experiment(noise)  # average generalization errors
-    plt.plot(alphas, av_errors, label='noise = {:.2f}'.format(noise))
+    plt.plot(alphas, av_errors,
+        label='noise = {:.2f}'.format(noise) if noise > 0 else 'No noise')
 
 plt.ylabel('Generalization error')
 plt.xlabel('alpha')
