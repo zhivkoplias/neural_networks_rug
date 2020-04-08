@@ -26,7 +26,7 @@ def perceptron(a, N, n_max):
         label = 1 if np.random.rand() < 0.5 else -1
         S.append(label)
 
-    w = np.zeros(N) # weights. intiially set to 0
+    w = np.zeros(N) # weights. intially set to 0
     for _ in range(n_max):
         scores = np.zeros(P, dtype=int)
 
@@ -38,7 +38,7 @@ def perceptron(a, N, n_max):
 
             # update weight matrix
             if e_mu_t <= 0:
-                w += a * xi[mu_t] * S[mu_t]
+                w += (1 / N) * xi[mu_t] * S[mu_t]
     
         # compare
         score = np.sum(scores)
