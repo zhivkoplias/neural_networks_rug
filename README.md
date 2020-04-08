@@ -1,5 +1,5 @@
 # Perceptron training assignment
-Neural Networks course RUG
+Neural Networks course RUG (2020)
 
 ## Usage
 
